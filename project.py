@@ -1,6 +1,12 @@
 import pandas as pd
 names = pd.read_csv('cityName.csv')
 edges = pd.read_csv('FromTo.csv')
+left_node = []
+for from_ID in edges:
+    left_node.append(edges[from_ID])
+
+print(left_node)
+
 
 def getName(num):
     return names.query(f'City_ID == {num}')['Name']
@@ -11,4 +17,7 @@ def listNames(ids):
         result.append(getName(i))
     return result
 
-print(listNames([1,2,3,4,5,6,10]))
+def travel(a, b):
+    ids = []
+    count = 0
+   
