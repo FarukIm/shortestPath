@@ -2,6 +2,7 @@ import pandas as pd
 names = pd.read_csv('cityName.csv')
 edges = pd.read_csv('FromTo.csv')
 left_node = []
+right_node = []
 for from_ID in edges:
     left_node.append(edges[from_ID])
 
