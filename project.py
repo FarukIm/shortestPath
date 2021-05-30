@@ -22,6 +22,16 @@ def list_names(ids):
 def get_id(name):
     return names.query(f'Name == {name}')['City_ID']
 
+def get_neighbours(id):
+    neighbours = []
+    for i in range(len(left_node)):
+        if(left_node[i] == id):
+            neighbours.append(right_node[i])
+        elif(right_node[i] == id):
+            neighbours.append(left_node[i])
+    return neighbours
+
+
 def travel(a, b):
     start = get_id(a)
     end = get_id(b)
@@ -34,8 +44,4 @@ def travel(a, b):
         
         next = False
 
-        for i in visited:
-            if i == 
-
-            
 
