@@ -25,4 +25,17 @@ def get_id(name):
 def travel(a, b):
     start = get_id(a)
     end = get_id(b)
+    distance = [[a, 0]]
+    visited = []
+    visited.append(a)
+    result = []
+    last_node = -1
+    while last_node != end:
+        
+        next = False
+
+        for i in visited:
+            if i == 
+
+            
 
