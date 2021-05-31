@@ -1,3 +1,4 @@
+from socket import getnameinfo
 import pandas as pd
 import queue 
 
@@ -28,6 +29,7 @@ for City_ID in names['City_ID']:
 def get_name(num):
     return names.query(f'City_ID == {num}')['Name']
 
+
 def list_names(ids):
     result = []
     for i in ids:
@@ -35,7 +37,7 @@ def list_names(ids):
     return result
 
 def get_id(name):
-    return names.query(f'Name == {name}')['City_ID']
+    return names.loc[names['Name'] == name, 'City_ID'].item()
 
 def is_visited(id, nodes):
     for i in nodes:
@@ -49,28 +51,34 @@ def get_distance(id, list):
             return i[1]
     return print('Item not in list error')
 
+def get_path(list):
+    print('f')
+
 def travel(a, b):
     start = get_id(a)
     end = get_id(b)
-    distance = [[a, 0]]
+    distance = [[start, 0]]
     visited = []
-    visited.append(a)
+    visited.append(start)
     result = queue.Queue()
-    result.put(a)
-    current = -1
-    while current != end:
+    result.put(start)
+    while visited[-1] != end:
         
         current = result.get()
+        adjacent = [y for (x, y) in adjecancy_list if x == current]
 
-        for i in get_neighbours(current):
+        for i in adjacent[0]:
             if is_visited(i, visited) == True:
                 continue
         
-            distance.append([current, get_distance(current, distance) +1])
-            result.put(current)
-            visited.append(current)
+            distance.append([i, get_distance(current, distance) + 1])
+            result.put(i)
+            visited.append(i)
+            if(i == end):
+                break
     
-    return get_distance(end, visited)
+    return distance[-1][1]
 
-for i in adjecancy_list:
-    print(i)
+a = travel('Tyin', 'Kumanovo')
+print(a)
+
