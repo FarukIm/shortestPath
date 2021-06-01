@@ -142,16 +142,19 @@ def get_path(list, b):
     names.reverse()
     return names
 
+more = 'y'
+while more == 'y':
+    first = input("Please enter the starting city: ")
+    last = input("Please enter the destination city: ")
 
+    distances = travel(first, last)
+    last_id = get_id(last)
 
-first = input("Please enter the starting city: ")
-last = input("Please enter the destination city: ")
+    print(f'The distance from {first} to {last} is: {distances[-1][2]}')
+    print('The order in which the cities are visited is(City_ID, Name): ')
 
-distances = travel(first, last)
-last_id = get_id(last)
+    for i in get_path(distances, last_id):
+        print(i)
 
-print(f'The distance from {first} to {last} is: {distances[-1][2]}')
-print('The order in which the cities are visited is(City_ID, Name): ')
+    more = input("Please enter 'y' if you want to run this program once more, else enter anything else: ")
 
-for i in get_path(distances, last_id):
-    print(i)
