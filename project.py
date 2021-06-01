@@ -6,12 +6,15 @@ import queue
 #read both of the csvs into lists
 names = pd.read_csv('cityName.csv')
 edges = pd.read_csv('FromTo.csv')
+
 #declare left_node as global variable, it will store the first column
 #of FromTo.csv
 left_node = []
+
 #declare right_node as global variable, it will store the second column 
 #of FromTo.csv
 right_node = []
+
 #adjecancy_list is a global variable, which stores city_id and list of all
 #adjacent nodes to the specific city_id
 adjecancy_list = []
@@ -19,6 +22,7 @@ adjecancy_list = []
 #populates left_node
 for from_ID in edges['from_ID']:
     left_node.append(from_ID)
+
 #populates right_node
 for to_ID in edges['to_ID']:
     right_node.append(to_ID)
@@ -66,40 +70,69 @@ def get_distance(city_id, list):
     except: 
         print('Item not in list error')
 
+#Here I've used the breadth first search algorithm
+#input: starting city, destination city
+#returns: list of all cities visited andtheir distance from starting city
 def travel(a, b):
+    #get id of starting city
     start = get_id(a)
+    #get id of destination city
     end = get_id(b)
+    #initialize distance, the elements are[city_id, parent_city_id, distance from start]
     distance = [[start, start, 0]]
+    #initialize list of visited cities
     visited = []
+    #add starting city to visited[]
     visited.append(start)
+    #result queue will store which nodes we have to visit next
     result = queue.Queue()
+    #add starting city id to result
     result.put(start)
+    #the while loop goes on until we visit the destination city
     while visited[-1] != end:
-        
+        #get function removes the first item from the queue and returns it
+        #@current is the node which we are itterating
         current = result.get()
+        #initialize adjacent as a list of all adjacent cities to the @current variable
         adjacent = [y for (x, y) in adjecancy_list if x == current]
-
+        #since @adjacent is of the form [item,[items]] when we get the adjacent cities
+        # we get [[items]] so we need to itterate over @adjacent[0] to itterate through
+        #list of list
         for i in adjacent[0]:
+            #if node is visited move to next itteration of loop
             if is_visited(i, visited) == True:
                 continue
-        
+            #append i, current(parent city), distance of previous node from start + 1
             distance.append([i, current, get_distance(current, distance) + 1])
+            #add i to queue so we can traverse it's adjacent nodes
             result.put(i)
+            #add i to visited so we don't visit it again
             visited.append(i)
+            #break from for loop if i is our destination city
             if(i == end):
                 break
-    
+    #return distance variable which contains[city_id, parent_city_id, distance_from_start]
     return distance
 
+#input: distance list we get from travel function, end node
+#returns: path from start node to end node including [city_ID, city_Name]
 def get_path(list, b):
+    #initialize list of [city_ID, city_Name]
     names = []
+    #add destination city id and name to names
     names.append([b, get_name(b)])
+    #initialize @previous which contains informations of last city's parent_city
     previous = list[-1][1]
+    #traverse list in reverse so we can track which node is next based on parent_city
     for i in reversed(list):
+        #if i is the last item of our list we skip
         if i == list[-1]:
             continue
+        #if i is equal to the previous city's parent 
         if i[0] == previous:
+            #add i city_id and city_name to @names
             names.append([i[0], get_name(i[0])])
+            #update @previous to the parent_city of i
             previous = i[1]
 
     names.reverse()
