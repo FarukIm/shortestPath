@@ -1,3 +1,8 @@
+#@Author: Faruk Imamovic
+#@Student_ID: 190302086
+#International University of Sarajevo
+#MATH209 Project 2
+
 #imports pandas, used for data manipulation,
 #I've used pandas library over the csv library because I found it easier to work with
 import pandas as pd
@@ -6,7 +11,6 @@ import queue
 #read both of the csvs into lists
 names = pd.read_csv('cityName.csv')
 edges = pd.read_csv('FromTo.csv')
-
 #declare left_node as global variable, it will store the first column
 #of FromTo.csv
 left_node = []
