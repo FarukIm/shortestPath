@@ -1,63 +1,75 @@
-from socket import getnameinfo
+#imports pandas, used for data manipulation,
+#I've used pandas library over the csv library because I found it easier to work with
 import pandas as pd
+#imports queue, enables working with queues
 import queue 
-
+#read both of the csvs into lists
 names = pd.read_csv('cityName.csv')
 edges = pd.read_csv('FromTo.csv')
+#declare left_node as global variable, it will store the first column
+#of FromTo.csv
 left_node = []
+#declare right_node as global variable, it will store the second column 
+#of FromTo.csv
 right_node = []
+#adjecancy_list is a global variable, which stores city_id and list of all
+#adjacent nodes to the specific city_id
 adjecancy_list = []
 
+#populates left_node
 for from_ID in edges['from_ID']:
     left_node.append(from_ID)
-
+#populates right_node
 for to_ID in edges['to_ID']:
     right_node.append(to_ID)
 
-def get_neighbours(id):
+#input: city_id
+#returns: list of all adjacent city_id's to the inputted city_id
+def get_neighbours(city_id):
     neighbours = []
     for i in range(len(left_node)):
-        if(left_node[i] == id):
+        if(left_node[i] == city_id):
             neighbours.append(right_node[i])
-        elif(right_node[i] == id):
+        elif(right_node[i] == city_id):
             neighbours.append(left_node[i])
     return neighbours
 
+#populates adjecancy_list
 for City_ID in names['City_ID']:
     adjecancy_list.append([City_ID, get_neighbours(City_ID)])
 
+#input: city id
+#returns: name of city
 def get_name(num):
-    return names.query(f'City_ID == {num}')['Name']
+    return names.loc[names['City_ID'] == num, 'Name'].item()
 
-
-def list_names(ids):
-    result = []
-    for i in ids:
-        result.append(get_name(i))
-    return result
-
+#input: name of city
+#returns: city id
 def get_id(name):
     return names.loc[names['Name'] == name, 'City_ID'].item()
 
-def is_visited(id, nodes):
-    for i in nodes:
-        if i == id:
+#input: city_id, visited_cities
+#returns: True if city_id is in visited_vities, else fFalse
+def is_visited(city_id, visited_cities):
+    for i in visited_cities:
+        if i == city_id:
             return True
     return False
 
-def get_distance(id, list):
-    for i in list:
-        if i[0] == id:
-            return i[1]
-    return print('Item not in list error')
-
-def get_path(list):
-    print('f')
+#input: city_id, list
+#returns: returns distance of city_id from first city, throws exception otherwise
+def get_distance(city_id, list):
+    try:
+        for i in list:
+            if i[0] == city_id:
+                return i[2]
+    except: 
+        print('Item not in list error')
 
 def travel(a, b):
     start = get_id(a)
     end = get_id(b)
-    distance = [[start, 0]]
+    distance = [[start, start, 0]]
     visited = []
     visited.append(start)
     result = queue.Queue()
@@ -71,14 +83,38 @@ def travel(a, b):
             if is_visited(i, visited) == True:
                 continue
         
-            distance.append([i, get_distance(current, distance) + 1])
+            distance.append([i, current, get_distance(current, distance) + 1])
             result.put(i)
             visited.append(i)
             if(i == end):
                 break
     
-    return distance[-1][1]
+    return distance
 
-a = travel('Tyin', 'Kumanovo')
-print(a)
+def get_path(list, b):
+    names = []
+    names.append([b, get_name(b)])
+    previous = list[-1][1]
+    for i in reversed(list):
+        if i == list[-1]:
+            continue
+        if i[0] == previous:
+            names.append([i[0], get_name(i[0])])
+            previous = i[1]
 
+    names.reverse()
+    return names
+
+
+
+first = input("Please enter the starting city: ")
+last = input("Please enter the destination city: ")
+
+distances = travel(first, last)
+last_id = get_id(last)
+
+print(f'The distance from {first} to {last} is: {distances[-1][2]}')
+print('The order in which the cities are visited is(City_ID, Name): ')
+
+for i in get_path(distances, last_id):
+    print(i)
